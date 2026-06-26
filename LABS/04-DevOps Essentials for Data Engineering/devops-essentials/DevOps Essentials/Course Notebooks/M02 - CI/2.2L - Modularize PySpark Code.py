@@ -243,7 +243,6 @@ df = uppercase_columns_names(df)
 
 ## Save DataFrame as a table in your catalog
 save_to_catalog(df, catalog_name = DA.catalog_name, schema_name="default", table_name = "my_lab_table")
-#
 
 # COMMAND ----------
 
