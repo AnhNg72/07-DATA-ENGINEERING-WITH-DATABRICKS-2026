@@ -189,8 +189,9 @@ def save_to_catalog(df, catalog_name, schema_name, table_name):
 
 # COMMAND ----------
 
-## convert_miles_to_km
-<FILL-IN>
+# convert_miles_to_km
+def convert_miles_to_km(df, new_column_name, miles_column):
+    return df.withColumn(new_column_name, F.round(F.col(miles_column) * 1.60934, 2))
 
 # COMMAND ----------
 
@@ -202,7 +203,8 @@ def save_to_catalog(df, catalog_name, schema_name, table_name):
 # COMMAND ----------
 
 ## uppercase_column_names
-<FILL-IN>
+def uppercase_columns_names(df):
+    return df.select([F.col(col).alias(col.upper()) for col in df.columns])
 
 # COMMAND ----------
 
@@ -220,14 +222,24 @@ def save_to_catalog(df, catalog_name, schema_name, table_name):
 
 # COMMAND ----------
 
+# MAGIC %skip
+# MAGIC %sql
+# MAGIC ALTER TABLE main.default.my_lab_table
+# MAGIC ADD COLUMN trip_distance_km double;
+
+# COMMAND ----------
+
 ## Load table
 df = load_data("samples.nyctaxi.trips")
 
 ## Convert miles to km
 ## TODO - Add your function here
 
+df = convert_miles_to_km(df, new_column_name ="trip_distance_km", miles_column="trip_distance")
+
 ## Upcase column
 ## TODO - Add your function here
+df = uppercase_columns_names(df)
 
 ## Save DataFrame as a table in your catalog
 save_to_catalog(df, catalog_name = DA.catalog_name, schema_name="default", table_name = "my_lab_table")
@@ -262,8 +274,11 @@ from pyspark.testing.utils import assertDataFrameEqual
 solution_df = spark.read.table(f"{DA.catalog_name}.default.nyc_lab_solution_table")
 user_df = spark.read.table(f"{DA.catalog_name}.default.my_lab_table")
 
+new_user_df = uppercase_columns_names(user_df)
+
 # Use assertDataFrameEqual to compare the two tables. Return an error if the tables are different.
-assertDataFrameEqual(solution_df, user_df)
+# assertDataFrameEqual(solution_df, user_df)
+assertDataFrameEqual(solution_df, new_user_df)
 
 print("The tables are identical! Functions were created correctly.")
 

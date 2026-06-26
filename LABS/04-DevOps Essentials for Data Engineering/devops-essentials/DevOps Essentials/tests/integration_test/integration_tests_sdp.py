@@ -1,4 +1,12 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "2"
+# dependencies = [
+#   "dlt",
+#   "databricks-dlt",
+# ]
+# ///
 # MAGIC %md
 # MAGIC # SDP Integration Tests Using Expectations
 # MAGIC This Spark Declarative Pipeline is a simple example pipeline that includes a few integration checks using expectations on a simple project to teach the basics. There are additional expectations you can set or unit tests you can build to streamline the project, but we're keeping it simple.
@@ -22,10 +30,16 @@
 
 # COMMAND ----------
 
-from pyspark import pipelines as dp
+import dlt # When run in a pipeline, this package will exist (no way to import it here)  
 
-## Store the target configuration environment in the variable targert
-target = spark.conf.get("target")
+## Store the target configuration environment in the variable target
+## When running in a pipeline, this reads from pipeline configuration
+## When testing standalone, falls back to 'development'
+try:
+    target = spark.conf.get("target")
+except Exception:
+    target = "development"
+    print(f"Warning: 'target' config not found. Defaulting to '{target}' for standalone testing.")
 
 # COMMAND ----------
 
@@ -74,17 +88,26 @@ if target in ('development', 'stage'):
 
 # COMMAND ----------
 
+
 def test_count_table_total_rows(table_name, total_count, target):
     '''
     Count the number of rows in the specified table and compare with the expected values for development and stage data. 
     Fail the update if the count does not match the specified values.
     '''
-    @dp.table(
+    # @dp.table(
+    #     name=f"TEST_{target}_{table_name}_total_rows_verification",
+    #     comment=f"Confirms all rows were ingested from the {target} raw data to {table_name}"
+    # )
+
+    # @dp.expect_all_or_fail({"valid count": f"total_rows = {total_count}"}) 
+    # dlt.enable_local_execution()
+    dlt.table (
         name=f"TEST_{target}_{table_name}_total_rows_verification",
         comment=f"Confirms all rows were ingested from the {target} raw data to {table_name}"
     )
 
-    @dp.expect_all_or_fail({"valid count": f"total_rows = {total_count}"}) 
+    dlt.expect_all_or_fail({"valid count": f"total_rows = {total_count}"}) 
+
 
     def count_table_total_rows():
         return spark.sql(f"""
@@ -111,13 +134,23 @@ def test_gold_table_columns():
         "valid cholest group": "HighCholest_Group in ('Normal', 'Above Average', 'High', 'Unknown')"
     }
 
-    @dp.table(comment="Check age group and high cholest group in the gold table")
+    # @dp.table(comment="Check age group and high cholest group in the gold table")
+
+    # ## Fail if expectations are not met
+    # @dp.expect_all_or_fail(check_silver_calc_columns)
+
+    # def test_calculated_columns_age_cholesterol():
+    #     return (dp
+    #             .read("chol_age_agg")
+    #             .select("Age_Group", "HighCholest_Group")
+    #         )
+    @dlt.table(comment="Check age group and high cholest group in the gold table")
 
     ## Fail if expectations are not met
-    @dp.expect_all_or_fail(check_silver_calc_columns)
+    @dlt.expect_all_or_fail(check_silver_calc_columns)
 
     def test_calculated_columns_age_cholesterol():
-        return (dp
+        return (dlt
                 .read("chol_age_agg")
                 .select("Age_Group", "HighCholest_Group")
             )

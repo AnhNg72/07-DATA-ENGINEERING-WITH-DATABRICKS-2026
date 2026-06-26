@@ -3,6 +3,11 @@
 
 # COMMAND ----------
 
+## Create the DA keys for the user's catalogs
+DA.create_DA_keys()
+
+# COMMAND ----------
+
 ## Display the course catalog and schema name for the user.
 DA.display_config_values(
   [

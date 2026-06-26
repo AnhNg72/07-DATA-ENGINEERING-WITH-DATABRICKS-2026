@@ -1,4 +1,13 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "2"
+# ///
+# %sql
+# CREATE OR REPLACE TABLE workspace.ops.meta (key string, value string);
+
+# COMMAND ----------
+
 # MAGIC %run ./Classroom-Setup-Common
 
 # COMMAND ----------
@@ -45,6 +54,8 @@ def create_catalogs(self, catalog_suffix: list):
     ## Create catalog for the user for the course.
     catalog_start = f'{DA.catalog_name}'
     create_catalogs = [catalog_start + suffix for suffix in catalog_suffix]
+
+    print(create_catalogs)
 
     ## Check if the required user catalogs exist in the workspace. If not create catalogs.
     if set(create_catalogs).issubset(set(list_of_curr_catalogs)):
@@ -411,19 +422,19 @@ DA.create_catalogs(list_of_catalog_suffixes)
 ## Create the DA keys for the user's catalogs
 DA.create_DA_keys()
 
-## Create the volumes in each catalog
+# ## Create the volumes in each catalog
 DA.create_volumes(in_catalog=DA.catalog_name, in_schema='default', vol_names=['health'])
 DA.create_volumes(in_catalog=DA.catalog_dev, in_schema='default', vol_names=['health'])
 DA.create_volumes(in_catalog=DA.catalog_stage, in_schema='default', vol_names=['health'])
 DA.create_volumes(in_catalog=DA.catalog_prod, in_schema='default', vol_names=['health'])
-
 
 ##
 ## Create the CSV files
 ##
 
 ## Create the Spark dataframe to use
-sdf = DA.create_spark_data_frame_from_cdc("/Volumes/dbacademy_cdc_diabetes/v01/cdc-diabetes/diabetes_binary_5050_raw.csv")
+# sdf = DA.create_spark_data_frame_from_cdc("/Volumes/dbacademy_cdc_diabetes/v01/cdc-diabetes/diabetes_binary_5050_raw.csv")
+sdf = DA.create_spark_data_frame_from_cdc("/Volumes/databricks_diabetes_health_indicators_dataset/v01/cdc-diabetes/diabetes_binary_5050_raw.csv")
 
 
 ## Create the CSV files for the course.
@@ -448,3 +459,7 @@ DA.display_config_values(
     ('Main catalog reference: DA.catalog_name', DA.catalog_name)
    ]
 )
+
+# COMMAND ----------
+
+print(DA.catalog_name)

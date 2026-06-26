@@ -1,4 +1,8 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "2"
+# ///
 # MAGIC %md
 # MAGIC
 # MAGIC <div style="text-align: center; line-height: 0; padding-top: 9px;">
@@ -90,7 +94,8 @@
 
 # COMMAND ----------
 
-<FILL-IN>
+# <FILL-IN>
+from src_lab.lab_functions import transforms
 
 # COMMAND ----------
 
@@ -115,6 +120,9 @@ def test_uppercase_columns_function():
     ## Fake DataFrame with random column names
     data = [(1, 5.0, 1, 1, 1, 1)]
     columns = ["id", "trip_distance", "My_Column", "WithNumbers123", "WithSymbolX@#", "With Space"]
+    uppercase_columns = []
+    for i in columns:
+        uppercase_columns.append(i.upper())
     df = spark.createDataFrame(data, columns)
 
     ## Apply the transforms.uppercase_columns_names function to return the actual column names
@@ -122,9 +130,10 @@ def test_uppercase_columns_function():
     actual_columns = actual_df.columns
 
     ## TODO: Create a list of the expected column names
+    expected_columns = uppercase_columns
 
     ## TODO: Perform a test of the actual columns names and expected column names using a simple python assert statement
-
+    assert actual_columns == expected_columns
     
     print('Test Passed!')
     
@@ -169,6 +178,8 @@ test_uppercase_columns_function()
 
 from pyspark.sql import functions as F
 from pyspark.sql.types import StructType, StructField, DoubleType
+from src_lab.lab_functions import transforms
+from pyspark.testing.utils import assertDataFrameEqual
 
 ##TODO: Import the functions module assertDataFrameEqual
 
@@ -189,12 +200,15 @@ def test_convert_miles_to_km_function():
 
 
     ## TODO: Complete the following <FILL-IN>: Create an expected DataFrame with a defined schema using StructField DoubleType for each column
-    data = [
-        (1.0, <FILL-IN>),   # Row with values
-        (5.5, <FILL-IN>),   # Row with values
-        (None, <FILL-IN>)   # Row with null values
-    ]
-
+    # data = [
+    #     (1.0, <FILL-IN>),   # Row with values
+    #     (5.5, <FILL-IN>),   # Row with values
+    #     (None, <FILL-IN>)   # Row with null values
+    # ]
+    data = [(1.0, 1.61),
+            (5.5, 8.85),   
+            (None, None)]
+           
     ## Define schema
     schema = StructType([
         StructField("trip_distance_miles", DoubleType(), True),
@@ -204,9 +218,8 @@ def test_convert_miles_to_km_function():
     ## Create expected DataFrame
     expected_df = spark.createDataFrame(data, schema)
 
-
     ## TODO: Compare the actual and expected DataFrames using assertDataFrameEqual
-
+    assertDataFrameEqual(actual_df, expected_df)
 
     print('Test Passed!')
 
@@ -310,12 +323,17 @@ test_convert_miles_to_km_function()
 
 # COMMAND ----------
 
+ls ../../tests/unit_tests/
+
+# COMMAND ----------
+
 import pytest
 import sys
 
 sys.dont_write_bytecode = True
 
-retcode = pytest.main(["<FILL-IN>", "-v", "-p", "no:cacheprovider"])
+# retcode = pytest.main(["<FILL-IN>", "-v", "-p", "no:cacheprovider"])
+retcode = pytest.main(["../../tests/unit_tests/test_spark_helper_functions.py",  "-v", "-p", "no:cacheprovider"])
 
 assert retcode == 0, "The pytest invocation failed. See the log for details."
 

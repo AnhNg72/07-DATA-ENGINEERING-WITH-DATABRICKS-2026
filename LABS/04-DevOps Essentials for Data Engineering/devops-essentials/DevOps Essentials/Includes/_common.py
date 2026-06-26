@@ -1,5 +1,9 @@
 # Databricks notebook source
-# MAGIC %pip install --quiet -U databricks-sdk==0.36.0
+# /// script
+# [tool.databricks.environment]
+# environment_version = "2"
+# ///
+# MAGIC %pip install --quiet -U databricks-sdk==0.40.0
 # MAGIC dbutils.library.restartPython()
 
 # COMMAND ----------

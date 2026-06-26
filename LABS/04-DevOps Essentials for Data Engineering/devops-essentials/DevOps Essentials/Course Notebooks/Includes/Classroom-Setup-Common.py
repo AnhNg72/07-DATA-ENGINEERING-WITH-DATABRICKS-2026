@@ -1,5 +1,9 @@
 # Databricks notebook source
-# MAGIC %run ../../../Includes/_common
+# /// script
+# [tool.databricks.environment]
+# environment_version = "2"
+# ///
+# MAGIC %run ../../Includes/_common
 
 # COMMAND ----------
 
@@ -9,10 +13,18 @@ def create_DA_keys(self):
     Create the DA references to the dev, prod and stage catalogs for the user.
     '''
     print('Set DA dynamic references to the dev, stage and prod catalogs.\n')
-    setattr(DA, f'catalog', f'{self.catalog_name}')
-    setattr(DA, f'catalog_dev', f'{self.catalog_name}_1_dev')
-    setattr(DA, f'catalog_stage', f'{self.catalog_name}_2_stage')
-    setattr(DA, f'catalog_prod', f'{self.catalog_name}_3_prod')
+    # setattr(DA, f'catalog', f'{self.catalog_name}')
+    # setattr(DA, f'catalog_dev', f'{self.catalog_name}_1_dev')
+    # setattr(DA, f'catalog_stage', f'{self.catalog_name}_2_stage')
+    # setattr(DA, f'catalog_prod', f'{self.catalog_name}_3_prod')
+   
+    catalog_name = 'catalog'
+    setattr(DA, f'catalog', f'{catalog_name}')
+    setattr(DA, f'catalog_name', 'main')
+    setattr(DA, f'catalog_dev', f'{catalog_name}_1_dev')
+    setattr(DA, f'catalog_stage', f'{catalog_name}_2_stage')
+    setattr(DA, f'catalog_prod', f'{catalog_name}_3_prod')
+
 
 # COMMAND ----------
 

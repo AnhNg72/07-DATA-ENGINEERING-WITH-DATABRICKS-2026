@@ -1,4 +1,8 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "2"
+# ///
 # MAGIC %md
 # MAGIC
 # MAGIC <div style="text-align: center; line-height: 0; padding-top: 9px;">
@@ -74,10 +78,6 @@
 
 # MAGIC %md
 # MAGIC Run the following cell to view the value of the `DA.catalog_name` variable. Notice that it is referencing your main catalog: **your_user_name**.
-
-# COMMAND ----------
-
-print(DA.catalog_name)
 
 # COMMAND ----------
 
